@@ -16,7 +16,7 @@ namespace Scraper
             {
                 output = JsonConvert.SerializeObject(input);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 log.Error("Failed to serialize objects to save");
             }
@@ -31,13 +31,13 @@ namespace Scraper
             {
                 output = JsonConvert.DeserializeObject<T>(input);
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 log.Error("Failed to deserialize string");
 
             }
 
-            return output;  
+            return output;
         }
     }
 }

@@ -15,31 +15,20 @@ namespace Scraper
 
         public async Task<HtmlDocument> GetDocument(string url)
         {
-            var doc = new HtmlAgilityPack.HtmlDocument();
+            var doc = new HtmlDocument();
 
-            using (HttpClient client = new HttpClient())
+            try
             {
-                // Call asynchronous network methods in a try/catch block to handle exceptions
-                try
-                {
-                    //Accept all server certificate
-                    ServicePointManager.ServerCertificateValidationCallback =
-                        delegate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-                        {
-                            return true;
-                        };
+                HttpResponseMessage response = await Network.Instance.Client.GetAsync(url);
+                response.EnsureSuccessStatusCode();
 
-                    HttpResponseMessage response = await client.GetAsync(url);
-                    response.EnsureSuccessStatusCode();
-
-                    string responseBody = await response.Content.ReadAsStringAsync();
-                    doc.LoadHtml(responseBody);
-                }
-                catch (HttpRequestException ex)
-                {
-                    log.Warn($"Unable to download: {url}");
-                    return null;
-                }
+                string responseBody = await response.Content.ReadAsStringAsync();
+                doc.LoadHtml(responseBody);
+            }
+            catch (HttpRequestException)
+            {
+                log.Warn($"Unable to download: {url}");
+                return null;
             }
 
             return doc;
